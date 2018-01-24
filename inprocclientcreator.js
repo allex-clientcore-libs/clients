@@ -15,6 +15,9 @@ function createInProcClient(lib,Client,talkerFactory){
   InProcClient.prototype.createTalker = function () {
     return q(talkerFactory('inproc', this.gate));
   };
+  InProcClient.prototype.oobItemClone = function (item) {
+    return JSON.parse(JSON.stringify(item));
+  };
   return InProcClient;
 }
 
