@@ -91,11 +91,14 @@ function createClient(lib){
     }
   };
   OOBSource.prototype.setOOBSink = function(oobsink){
+    var _os;
     if(!this.oob){
       return;
     }
     if(oobsink){
-      this.oob.drain(oobsink.onOOBData.bind(oobsink));
+      _os = oobsink;
+      this.oob.drain(_os.onOOBData.bind(_os));
+      _os = null;
     }
     this.oobsink = oobsink;
   };
@@ -274,10 +277,13 @@ function createClient(lib){
     }
   };
   Client.prototype.drainer = function (qi) {
+    var _d;
     if (!this.checkTalker()) {
       return;
     }
-    this.talker.transfer(this, qi[0]).then(qi[1].resolve.bind(qi[1]));
+    _d = qi[1];
+    this.talker.transfer(this, qi[0]).then(_d.resolve.bind(_d));
+    _d = null;
   };
   Client.prototype.okToSend = function () {
     return this.identity.established();
@@ -285,7 +291,7 @@ function createClient(lib){
   Client.prototype.exec = function(callablespec){
     if (!this.q) {
       console.warn("I'm dead ... ");
-      return q.reject(new lib.Error('ALREADY_DEAD', 'A destroyed Client cannot exed'));
+      return q.reject(new lib.Error('ALREADY_DEAD', 'A destroyed Client cannot exec'));
     }
     if (!this.talker) {
       var d = q.defer();
@@ -325,12 +331,13 @@ function createClient(lib){
   Client.prototype.subConnect = function(subservicename,userhash,ctor){
     //console.trace();
     //console.log('subConnect',subservicename,userhash,process.pid);
-    var d = q.defer();
+    var d = q.defer(), ret = d.promise;
     this.exec(['!', ['subConnect', [subservicename,userhash]]]).done(
       this.onSubConnected.bind(this,subservicename,d),
       d.reject.bind(d)
     );
-    return d.promise;
+    d = null;
+    return ret;
   };
   Client.prototype.onIncomingExecResult = function(incomingunit){
     if (!(incomingunit.id || incomingunit.oob)) {
