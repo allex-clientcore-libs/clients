@@ -122,6 +122,7 @@ function createClient(lib){
     this.children = new lib.Map();
     this.identity = new ClientIdentity(session,credentials);
     this.talker = null;
+    this.dieExeced = false;
     //this.talkerDestroyedListener = null;
     this.obtainTalker().then(
       this.onTalker.bind(this),
@@ -146,6 +147,7 @@ function createClient(lib){
     }
     this.talkerDestroyedListener = null;
     */
+    this.dieExeced = null;
     if (this.talker) {
       this.talker.remove(this);
     }
@@ -217,10 +219,13 @@ function createClient(lib){
     this.children.traverse(godier);
     //console.log(this.identity.session, 'going to die');
     //console.log(process.pid, 'Client wants to die');
-    this.exec(['!',['die', []]]).then(
-      null,
-      this.destroy.bind(this)
-    );
+    if (this.dieExeced === false) {
+      this.dieExeced = true;
+      this.exec(['!',['die', []]]).then(
+        null,
+        this.destroy.bind(this)
+      );
+    }
   };
   Client.prototype.obtainTalker = function () {
     if (this.talker) {
