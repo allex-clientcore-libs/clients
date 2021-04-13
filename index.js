@@ -5,8 +5,9 @@ function createClientFactory(lib, talkerFactory){
   var Client = require('./clientcreator')(lib),
     ChildProcClient = require('./childprocclientcreator')(lib, Client, talkerFactory),
     SocketClient = require('./socketclientcreator')(lib, Client, talkerFactory),
-    WSClient = require('./wsclientcreator')(lib, Client, talkerFactory),
-    //HTTPClient = require('./httpclientcreator')(lib,Client,HTTPTalker),
+    HttpClientBase = require('./httpclientbasecreator')(lib, Client, talkerFactory),
+    WSClient = require('./wsclientcreator')(lib, HttpClientBase),
+    HTTPClient = require('./httpclientcreator')(lib, HttpClientBase),
     InProcClient = require('./inprocclientcreator')(lib,Client,talkerFactory);
 
   function produceClient(connectionstring,credentials,session){
@@ -36,7 +37,7 @@ function createClientFactory(lib, talkerFactory){
         return new (WSClient)(connectionstring,csurlobj.hostname||csurlobj.pathname,csurlobj.port,session,credentials);
         break;
       case 'http:':
-        //return new (HTTPClient)(csurlobj.hostname,csurlobj.port,session,credentials);
+        return new (HTTPClient)(connectionstring,csurlobj.hostname||csurlobj.pathname,csurlobj.port,session,credentials);
         break;
       default:
         throw new lib.UnsupportedProtocolError(csurlobj.protocol);
