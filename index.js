@@ -37,6 +37,7 @@ function createClientFactory(lib, talkerFactory){
         return new (WSClient)(connectionstring,csurlobj.hostname||csurlobj.pathname,csurlobj.port,session,credentials);
         break;
       case 'http:':
+      case 'https:':
         return new (HTTPClient)(connectionstring,csurlobj.hostname||csurlobj.pathname,csurlobj.port,session,credentials);
         break;
       default:
