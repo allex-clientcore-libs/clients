@@ -66,6 +66,10 @@ function createClient(lib){
   OOBSource.prototype.isGoingToDie = function(){
     return this.oobsink === dummyOOBSink;
   };
+  OOBSource.prototype.takeExternalException = function (exception) {
+    this.setOOBSink(dummyOOBSink);
+    this.destroy(exception);
+  };
   OOBSource.prototype.onOOBData = function(oob){
     if (!this.oob) {
       return;
@@ -80,7 +84,7 @@ function createClient(lib){
       this.oobsink.onOOBData(oob);
     }else{
       try {
-      this.oob.push(this.oobItemClone(oob));
+        this.oob.push(this.oobItemClone(oob));
       } catch (e) {
         console.trace();
         console.log('cannot clone oob', oob);
@@ -130,6 +134,7 @@ function createClient(lib){
     );
   }
   lib.inherit(Client, lib.ComplexDestroyable);
+  Client.prototype.takeExternalException = OOBSource.prototype.takeExternalException;
   Client.prototype.onOOBData = OOBSource.prototype.onOOBData;
   Client.prototype.setOOBSink = OOBSource.prototype.setOOBSink;
   Client.prototype.isGoingToDie = OOBSource.prototype.isGoingToDie;
@@ -360,9 +365,9 @@ function createClient(lib){
       var child = this.children.get(isess);
       if(child){
         child.onIncomingExecResult(incomingunit);
-      }
+      } 
       return;
-    }
+    } 
   };
   Client.prototype.setChild = function(chld){
     if(!(chld && chld.identity && chld.identity.session)){
