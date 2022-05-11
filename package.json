@@ -1,6 +1,6 @@
 {
   "name": "allex_clientsclientcorelib",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "AllexJS client side communication client Factory",
   "main": "index.js",
   "scripts": {

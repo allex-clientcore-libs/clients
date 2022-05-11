@@ -77,7 +77,7 @@ function createClient(lib){
     if(oob[1] === '-'){
       //console.log(process.pid,'OOBSource dying',this.identity ? this.identity.session : 'no session');
       this.setOOBSink(dummyOOBSink);
-      this.destroy();
+      this.destroy(new lib.Error('SERVER_SIDE_KILL'));
       return;
     }
     if(this.oobsink){
@@ -385,10 +385,12 @@ function createClient(lib){
     }
   };
   Client.prototype.removeChild = function(chld){
+    var session;
     if(!(this.children && chld && chld.identity && chld.identity.session)){
       return;
     }
-    var session = chld.identity.session;
+    this.__dyingException = this.__dyingException || chld.__dyingException;
+    session = chld.identity.session;
     this.children.remove(session);
     if(this.children.count<1) {
       this.maybeDie();
